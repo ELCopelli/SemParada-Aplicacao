@@ -29,9 +29,9 @@ import CardHeader from "components/Card/CardHeader.jsx";
 import CardIcon from "components/Card/CardIcon.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import Input from '@material-ui/core/Input';
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import Input from "@material-ui/core/Input";
 
 import { bugs, website, server } from "variables/general.jsx";
 
@@ -46,7 +46,7 @@ import dashboardStyle from "assets/jss/material-dashboard-react/views/dashboardS
 class Dashboard extends React.Component {
   state = {
     value: 0,
-    equipamento: ''
+    equipamento: ""
   };
   handleChange = (event, value) => {
     this.setState({ value });
@@ -58,47 +58,52 @@ class Dashboard extends React.Component {
 
   async getDadosEquipamento() {
     try {
-      console.log('this.state.equipamento',this.state.equipamento);
-      let response = await fetch('http://copelli.com.br:8080/get_dados_do_equipamento/' + this.state.equipamento);
+      console.log("this.state.equipamento", this.state.equipamento);
+      let response = await fetch(
+        "http://copelli.com.br:8080/get_dados_do_equipamento/" +
+          this.state.equipamento
+      );
       let responseJson = await response.json();
       console.log(responseJson);
-      var etiquetas = await Object.keys(responseJson).map(i => JSON.parse(responseJson[Number(i)].id).toString());
-      var valores = await Object.keys(responseJson).map(i => JSON.parse(responseJson[Number(i)].resultado));
-      console.log('labels',dailySalesChart.data.labels);
-      console.log('etiquetas',etiquetas);
-      console.log('valores',valores);
+      var etiquetas = await Object.keys(responseJson).map(i =>
+        JSON.parse(responseJson[Number(i)].id).toString()
+      );
+      var valores = await Object.keys(responseJson).map(i =>
+        JSON.parse(responseJson[Number(i)].resultado)
+      );
+      console.log("labels", dailySalesChart.data.labels);
+      console.log("etiquetas", etiquetas);
+      console.log("valores", valores);
       dailySalesChart.data.series = await [valores];
       dailySalesChart.data.labels = await etiquetas;
-      
-     } catch(error) {
+    } catch (error) {
       console.error(error);
     }
   }
 
-  async handleChangeEquipamento (event) {
-    
+  async handleChangeEquipamento(event) {
     //console.log('value',value);
     await this.setState({ [event.target.name]: event.target.value });
-    
     await this.getDadosEquipamento();
-  };
+    await this.setState({ [event.target.name]: event.target.value });
+  }
 
   render() {
     const { classes } = this.props;
     return (
       <div>
         <Select
-            value={this.state.equipamento}
-            onChange={(event) => this.handleChangeEquipamento(event)}
-            input={<Input name="equipamento" id="age-helper" />}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={'IIF5810'}>IIF5810</MenuItem>
-            <MenuItem value={'MAQUINA_01'}>MAQUINA_01</MenuItem>
-          </Select>
-        
+          value={this.state.equipamento}
+          onChange={event => this.handleChangeEquipamento(event)}
+          input={<Input name="equipamento" id="age-helper" />}
+        >
+          <MenuItem value="">
+            <em>None</em>
+          </MenuItem>
+          <MenuItem value={"IIF5810"}>IIF5810</MenuItem>
+          <MenuItem value={"MAQUINA_01"}>MAQUINA_01</MenuItem>
+        </Select>
+
         <GridContainer>
           <GridItem xs={12} sm={12} md={12}>
             <Card chart>

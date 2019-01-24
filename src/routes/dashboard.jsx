@@ -39,7 +39,7 @@ const dashboardRoutes = [
     icon: "content_paste",
     component: TableList
   },
-  {
+  /*{
     path: "/typography",
     sidebarName: "Typography",
     navbarName: "Typography",
@@ -67,7 +67,7 @@ const dashboardRoutes = [
     icon: Notifications,
     component: NotificationsPage
   },
-  /*{
+  {
     path: "/upgrade-to-pro",
     sidebarName: "Upgrade To PRO",
     navbarName: "Upgrade To PRO",
