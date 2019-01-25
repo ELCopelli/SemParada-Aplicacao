@@ -32,8 +32,11 @@ import CardFooter from "components/Card/CardFooter.jsx";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Input from "@material-ui/core/Input";
-
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import { bugs, website, server } from "variables/general.jsx";
+
 
 import {
   dailySalesChart,
@@ -43,14 +46,30 @@ import {
 
 import dashboardStyle from "assets/jss/material-dashboard-react/views/dashboardStyle.jsx";
 
+const styles = theme => ({
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  formControl: {
+    margin: theme.spacing.unit,
+    minWidth: 200,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing.unit * 2,
+  },
+});
+
 class Dashboard extends React.Component {
-  state = {
-    value: 0,
-    equipamento: ""
-  };
-  handleChange = (event, value) => {
-    this.setState({ value });
-  };
+  constructor(props){
+      super(props);
+      this.state = {
+        value: 0,
+        equipamento: '',
+        todos_equipamentos: []
+      };
+      this.listaEquipamentosSelecao();
+  }
 
   handleChangeIndex = index => {
     this.setState({ value: index });
@@ -61,12 +80,12 @@ class Dashboard extends React.Component {
       console.log("this.state.equipamento", this.state.equipamento);
       let response = await fetch(
         "http://copelli.com.br:8080/get_dados_do_equipamento/" +
-          this.state.equipamento
+        this.state.equipamento
       );
       let responseJson = await response.json();
       console.log(responseJson);
       var etiquetas = await Object.keys(responseJson).map(i =>
-        JSON.parse(responseJson[Number(i)].id).toString()
+        "Coleta "+JSON.parse(responseJson[Number(i)].id).toString()
       );
       var valores = await Object.keys(responseJson).map(i =>
         JSON.parse(responseJson[Number(i)].resultado)
@@ -88,22 +107,51 @@ class Dashboard extends React.Component {
     await this.setState({ [event.target.name]: event.target.value });
   }
 
+  async listaEquipamentosSelecao() {
+    let response =  await fetch(
+      "http://copelli.com.br:8080/get_equipamentos"
+    );
+    console.log('response',response);
+    let responseJson = await response.json();
+    console.log( 'responseJson',responseJson);
+    
+    var equipamentos = await Object.keys(responseJson).map(i =>
+      responseJson[Number(i)].equipamento
+    );
+    
+    this.state.todos_equipamentos = await equipamentos;
+
+    await this.setState({ todos_equipamentos: equipamentos });
+
+    console.log('todos',this.state.todos_equipamentos);
+
+    return;
+    
+  };
+
   render() {
     const { classes } = this.props;
+
     return (
       <div>
-        <Select
-          value={this.state.equipamento}
-          onChange={event => this.handleChangeEquipamento(event)}
-          input={<Input name="equipamento" id="age-helper" />}
-        >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value={"IIF5810"}>IIF5810</MenuItem>
-          <MenuItem value={"MAQUINA_01"}>MAQUINA_01</MenuItem>
-        </Select>
-
+        <div>
+          <InputLabel htmlFor="age-native-simple">Equipamento      </InputLabel>
+          <Select
+            value={this.state.equipamento}
+            onChange={event => this.handleChangeEquipamento(event)}
+            //input={<Input    name="equipamento" id="age-helper" />}>
+            inputProps={{
+              name: 'equipamento',
+              id: 'age-helper',
+            }}>
+            {this.state.todos_equipamentos.map((equip, index) => (
+                <MenuItem key={index} value={equip}>{equip}</MenuItem>
+            ))}
+        
+            {/*<MenuItem value={"IIF5810"}>IIF5810</MenuItem>
+            <MenuItem value={"MAQUINA_01"}>MAQUINA_01</MenuItem>*/}
+          </Select>
+        </div>
         <GridContainer>
           <GridItem xs={12} sm={12} md={12}>
             <Card chart>
@@ -118,12 +166,12 @@ class Dashboard extends React.Component {
               </CardHeader>
               <CardBody>
                 <h4 className={classes.cardTitle}>Temperatura</h4>
-                <p className={classes.cardCategory}>
+                {/*<p className={classes.cardCategory}>
                   <span className={classes.successText}>
                     <ArrowUpward className={classes.upArrowCardCategory} /> 55%
                   </span>{" "}
                   increase in today sales.
-                </p>
+                </p>*/}
               </CardBody>
               <CardFooter chart>
                 <div className={classes.stats}>
